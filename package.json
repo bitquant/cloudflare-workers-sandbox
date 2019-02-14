@@ -1,0 +1,38 @@
+{
+  "name": "cloudflare-workers-sandbox",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./bin/cli.js",
+  "bin": {
+    "cloudflare-workers-sandbox": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitquant/cloudflare-workers-sandbox.git"
+  },
+  "keywords": [
+    "cloudflare workers sandbox",
+    "cloudflare workers local",
+    "cloudflare workers test",
+    "cloudflare workers environment",
+    "cloudflare workers",
+    "cloudflare worker",
+    "service worker"
+  ],
+  "author": "bitquant",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bitquant/cloudflare-workers-sandbox/issues"
+  },
+  "homepage": "https://github.com/bitquant/cloudflare-workers-sandbox#readme",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "btoa": "^1.2.1",
+    "node-fetch": "^2.3.0",
+    "node-webcrypto-ossl": "^1.0.39",
+    "url": "^0.11.0"
+  }
+}
