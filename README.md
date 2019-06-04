@@ -9,7 +9,7 @@ $ npm install -D cloudflare-workers-sandbox
 
 ## Usage
 ```
-npx cloudflare-workers-sandbox /path/to/cloudflare/workers/app.js
+npx sbox /path/to/cloudflare/workers/app.js
 
 curl http://localhost:3000
 ```
