@@ -31,7 +31,14 @@ var fetchLog = function(...args) {
             : status >= 200 ? status.green
             : status.blue;
 
-        console.log(`${'<fetch>'.magenta} ${args[0]} ${status} ${responseTime} ms`);
+
+        let method = 'GET'
+        let options = args[1];
+        if (options && options.method) {
+            method = options.method;
+        }
+
+        console.log(`${'<fetch>'.magenta} ${method.cyan} ${args[0]} ${status} ${responseTime} ms`);
 
         return result;
     })
