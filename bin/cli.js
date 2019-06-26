@@ -4,7 +4,6 @@ var fetch = require('node-fetch');
 var Request = fetch.Request;
 var Response = fetch.Response;
 var Headers = fetch.Headers;
-var URL = require('url').URL;
 var util = require('util');
 var TextEncoder = util.TextEncoder;
 var TextDecoder = util.TextDecoder;
@@ -68,6 +67,8 @@ var morgan = require('morgan');
 var logger = morgan('dev');
 var port = 3000;
 var server = http.createServer(function(req, res) {
+    // req.url is a binary string so convert to a utf8 string
+    req.url = Buffer.from(req.url, 'binary').toString('utf8');
     logger(req, res, function() {
         handler(req, res);
     })
