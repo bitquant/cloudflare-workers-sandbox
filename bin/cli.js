@@ -10,6 +10,7 @@ var TextDecoder = util.TextDecoder;
 var btoa = require('btoa');
 var atob = require('atob');
 var Crypto = require('node-webcrypto-ossl');
+var caches = require('../lib/caches');
 
 var colors = require('colors');
 
@@ -47,6 +48,7 @@ var sandbox = {
     fetch: fetchLog, Request, Response, Headers, URL,
     TextEncoder, TextDecoder, btoa, atob,
     crypto: new Crypto(),
+    caches, // dummy cache
     console, // share console with sandbox
     addEventListener: (event, listener) => { eventListener = listener }
 }
@@ -78,13 +80,18 @@ server.listen(port);
 
 function handler(req, res) {
 
+    let headers = { 'cf-ray': '56c7d7628d82c564' };
+    Object.assign(headers, req.headers);
+
     let request = new fetch.Request(
         `http://${req.headers.host}${req.url}`, {
-            headers: req.headers,
+            headers: headers,
             method: req.method,
             body: req.method !== 'GET' && req.method !== 'HEAD' ? req : null
         }
     );
+
+    request.cf = { colo: 'SFO', country: 'US' };
 
     async function respondWith(responsePromise) {
         const workerResponse = await responsePromise;
