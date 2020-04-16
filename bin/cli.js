@@ -38,7 +38,8 @@ var fetchLog = function(...args) {
             method = options.method;
         }
 
-        console.log(`${'<fetch>'.magenta} ${method.cyan} ${args[0]} ${status} ${responseTime} ms`);
+        let url = (typeof args[0] === 'string') ? args[0] : args[0].url;
+        console.log(`${'<fetch>'.magenta} ${method.cyan} ${url} ${status} ${responseTime} ms`);
 
         return result;
     })
