@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-workers-sandbox",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "main": "./bin/cli.js",
   "bin": {

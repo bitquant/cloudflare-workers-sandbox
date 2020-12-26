@@ -64,6 +64,7 @@ var fetchLog = function(...args) {
 }
 
 var sandbox = {
+    cloudflareWorkersSandbox: true,
     fetch: fetchLog, Request, Response, Headers, URL,
     TextEncoder, TextDecoder, btoa, atob,
     crypto: new Crypto(),
