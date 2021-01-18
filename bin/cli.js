@@ -133,7 +133,7 @@ function handler(req, res) {
         // do nothing
     }
 
-    const event = { request, respondWith, waitUntil, passThroughOnException };
+    const event = { request, respondWith, waitUntil, passThroughOnException, type: 'fetch' };
 
     eventListener(event);
 }
