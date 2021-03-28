@@ -77,7 +77,7 @@ class Context {
         this.Response = Response
         this.Headers = Headers
         this.URL = URL
-        //this.URLSearchParams = URLSearchParams
+        this.URLSearchParams = URLSearchParams
         //this.ReadableStream = ReadableStream
         //this.WritableStream = WritableStream
         //this.TransformStream = TransformStream
@@ -145,7 +145,7 @@ class Context {
         this.isNaN = isNaN
         this.parseFloat = parseFloat
         this.parseInt = parseInt
-        this.self = this
+        //this.self = this
         this.undefined = undefined
         this.unescape = unescape
     }
