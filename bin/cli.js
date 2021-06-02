@@ -9,8 +9,8 @@ var TextEncoder = util.TextEncoder;
 var TextDecoder = util.TextDecoder;
 var btoa = require('btoa');
 var atob = require('atob');
-var Crypto = require('node-webcrypto-ossl');
 var caches = require('../lib/caches');
+var webcrypto = require('crypto').webcrypto;
 
 var colors = require('colors');
 
@@ -83,7 +83,8 @@ class Context {
         //this.TransformStream = TransformStream
         //this.FetchEvent = FetchEvent
         this.caches = caches // dummy cache
-        this.crypto = new Crypto()
+        this.crypto = webcrypto
+        this.CryptoKey = webcrypto.CryptoKey
         this.TextDecoder = TextDecoder
         this.TextEncoder = TextEncoder
         this.atob = atob
