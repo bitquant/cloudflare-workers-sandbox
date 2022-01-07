@@ -68,6 +68,7 @@ class Context {
     constructor() {
         this.cloudflareWorkersSandbox = true
         this.addEventListener = (event, listener) => { eventListener = listener }
+        this.moduleWorker = null
         this.setTimeout = setTimeout
         this.clearTimeout = clearTimeout
         this.setInterval = setInterval
@@ -177,7 +178,7 @@ var server = http.createServer(function(req, res) {
 server.on('listening', () => console.log(`Cloudflare Workers Sandbox: ready on port ${port}`));
 server.listen(port);
 
-function handler(req, res) {
+async function handler(req, res) {
 
     let headers = { 'cf-ray': '56c7d7628d82c564' };
     Object.assign(headers, req.headers);
@@ -190,10 +191,14 @@ function handler(req, res) {
         }
     );
 
-    request.cf = { colo: 'SFO', country: 'US' };
+    request.cf = { colo: 'MIA', country: 'US' };
 
     async function respondWith(responsePromise) {
         const workerResponse = await responsePromise;
+        await sendResponse(workerResponse);
+    }
+
+    async function sendResponse(workerResponse) {
         res.statusCode = workerResponse.status;
         res.statusMessage = workerResponse.statusText;
         for (const header of workerResponse.headers) {
@@ -214,5 +219,13 @@ function handler(req, res) {
 
     const event = { request, respondWith, waitUntil, passThroughOnException, type: 'fetch' };
 
-    eventListener(event);
+    if (sandbox.moduleWorker !== null) {
+        const environment = { };
+        const context = { waitUntil, passThroughOnException };
+        const workerResponse = await sandbox.moduleWorker.fetch(request, environment, context);
+        await sendResponse(workerResponse);
+    }
+    else {
+        eventListener(event)
+    }
 }
