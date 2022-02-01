@@ -1,24 +1,22 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var process = require('process');
-var { Buffer } = require('buffer');
-var fetch = require('node-fetch');
-var Request = fetch.Request;
-var Response = fetch.Response;
-var Headers = fetch.Headers;
-var util = require('util');
-var TextEncoder = util.TextEncoder;
-var TextDecoder = util.TextDecoder;
-var btoa = require('btoa');
-var atob = require('atob');
-var caches = require('../lib/caches');
-var KV = require('../lib/kv');
-var fetchLog = require('../lib/fetch');
-var webcrypto = require('crypto').webcrypto;
-var kvConfig = null;
+import { FormData, Headers, Request, Response } from 'node-fetch';
+import * as fs from 'fs';
+import process from 'process';
+import { Buffer } from 'buffer';
+import { TextEncoder, TextDecoder } from 'util';
+import btoa from 'btoa';
+import atob from 'atob';
+import caches from '../lib/caches.js';
+import KV from '../lib/kv.js';
+import fetchLog from '../lib/fetch.js';
+import { webcrypto } from 'crypto';
+import vm from 'vm';
+import http from 'http';
+import morgan from 'morgan';
+import colors from 'colors'; // extends String.prototype
 
-require('colors'); // extends String.prototype
+let kvConfig = null;
 
 try {
     let kvConfigFile = './kv-config.json';
@@ -49,6 +47,7 @@ class Context {
         this.setInterval = setInterval;
         this.clearInterval = clearInterval;
         this.fetch = fetchLog;
+        this.FormData = FormData;
         this.Request = Request;
         this.Response = Response;
         this.Headers = Headers;
@@ -135,12 +134,9 @@ if (process.argv.length <= 2) {
 var worker = fs.readFileSync(process.argv[2], 'utf8');
 var eventListener;
 var sandbox = new Context();
-var vm = require('vm');
 vm.createContext(sandbox);
 vm.runInContext(worker, sandbox);
 
-var http = require('http');
-var morgan = require('morgan');
 var logger = morgan('dev');
 var port = 3000;
 var server = http.createServer(function(req, res) {
@@ -158,7 +154,7 @@ async function handler(req, res) {
     let headers = { 'cf-ray': '56c7d7628d82c564' };
     Object.assign(headers, req.headers);
 
-    let request = new fetch.Request(
+    let request = new Request(
         `http://${req.headers.host}${req.url}`, {
             headers: headers,
             method: req.method,
@@ -181,7 +177,7 @@ async function handler(req, res) {
         }
         res.removeHeader('content-encoding');
         res.removeHeader('content-length');
-        res.end(await workerResponse.buffer());
+        res.end(Buffer.from(await workerResponse.arrayBuffer()));
     }
 
     async function waitUntil(somePromise) {
