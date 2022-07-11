@@ -14,7 +14,9 @@ import { webcrypto } from 'crypto';
 import vm from 'vm';
 import http from 'http';
 import morgan from 'morgan';
+// eslint-disable-next-line no-unused-vars
 import colors from 'colors'; // extends String.prototype
+process.traceDeprecation = true;
 
 let kvConfig = null;
 
@@ -22,18 +24,35 @@ try {
     let kvConfigFile = './kv-config.json';
 
     if (fs.existsSync(kvConfigFile)) {
-        console.log('KV bindings found');
+        console.log('kv bindings found');
         let fileContent = fs.readFileSync(kvConfigFile, 'utf8');
         kvConfig = JSON.parse(fileContent);
     }
     else {
-        console.log('KV bindings not detected');
+        console.log('no kv bindings configured');
     }
 }
 catch (err) {
     console.log(err);
 }
 
+let serviceBindings = null;
+
+try {
+    let serviceBindingsConfigFile = './service-binding.json';
+
+    if (fs.existsSync(serviceBindingsConfigFile)) {
+        console.log('service bindings found');
+        let fileContent = fs.readFileSync(serviceBindingsConfigFile, 'utf8');
+        serviceBindings = JSON.parse(fileContent);
+    }
+    else {
+        console.log('no service bindings configured');
+    }
+}
+catch (err) {
+    console.log(err);
+}
 
 
 class Context {
@@ -193,12 +212,14 @@ async function handler(req, res) {
     if (sandbox.moduleWorker !== null) {
         const environment = { };
         addKvBindings(environment);
+        addServiceBindings(environment);
         const context = { waitUntil, passThroughOnException };
         const workerResponse = await sandbox.moduleWorker.fetch(request, environment, context);
         await sendResponse(workerResponse);
     }
     else {
         addKvBindings(sandbox);
+        addServiceBindings(sandbox);
         eventListener(event);
     }
 }
@@ -214,5 +235,31 @@ function addKvBindings(environment) {
     for (let binding of kvConfig.bindings) {
         let { name, namespaceId } = binding;
         environment[name] = new KV(accountId, apiToken, name, namespaceId);
+    }
+}
+
+function addServiceBindings(environment) {
+
+    if (serviceBindings === null) {
+        return;
+    }
+
+    for (let binding of serviceBindings.bindings) {
+
+        let { name, hostname } = binding;
+
+        environment[name] = {
+            fetch: async (request, options) => {
+                const requestObject = new Request(request, options);
+                const url = new URL(requestObject.url);
+                // node-fetch throws a warning for this, maybe this will work once native fetch comes to node
+                //const targetRequest = new Request(`https://${hostname}${url.pathname}${url.search}`, requestObject);
+                const { method, headers, body, mode, credentials, cache, redirect, referrer, integrity } = requestObject;
+                headers.delete('host');
+                const targetRequest = new Request(`https://${hostname}${url.pathname}${url.search}`,
+                    { method, headers, body, mode, credentials, cache, redirect, referrer, integrity });
+                return await fetchLog(targetRequest);
+            }
+        };
     }
 }
