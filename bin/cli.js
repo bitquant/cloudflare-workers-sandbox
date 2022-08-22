@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { FormData, Headers, Request, Response } from 'node-fetch';
 import * as fs from 'fs';
 import process from 'process';
 import { Buffer } from 'buffer';
@@ -72,9 +71,9 @@ class Context {
         this.Headers = Headers;
         this.URL = URL;
         this.URLSearchParams = URLSearchParams;
-        //this.ReadableStream = ReadableStream
-        //this.WritableStream = WritableStream
-        //this.TransformStream = TransformStream
+        this.ReadableStream = ReadableStream;
+        this.WritableStream = WritableStream;
+        this.TransformStream = TransformStream;
         //this.FetchEvent = FetchEvent
         this.caches = caches; // dummy cache
         this.crypto = webcrypto;
