@@ -180,7 +180,7 @@ async function handler(req, res) {
         }
     );
 
-    request.cf = { colo: 'MIA', country: 'US' };
+    request.cf = { colo: 'MIA', country: 'US', asn: '30036', asOrganization: 'Mediacom Cable' };
 
     async function respondWith(responsePromise) {
         const workerResponse = await responsePromise;
